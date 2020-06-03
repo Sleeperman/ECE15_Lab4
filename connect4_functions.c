@@ -10,7 +10,7 @@
 
 int print_welcome(void) {
 	printf("*** Welcome to the Connect Four game!!! ***\n");
-	printf("Would you like to make the first move [y/n]: ");
+	printf("Would you like to make the first move [y/n]: \n");
 	char input_move;
 	scanf("%c", &input_move);
 	while (getchar() != '\n');
@@ -88,7 +88,11 @@ int player_move(int board[][BOARD_SIZE_VERT], int player_num){
         while (getchar() != '\n');
         
         if (player_move > 0 && player_move <=BOARD_SIZE_HORIZ &&  is_column_full(board, player_move)){//column is full
-            printf("Not a valid move. This column is full. Try again!\n");
+            if (is_column_full(board, player_move)){
+                printf("Not a valid move. This column is full. Try again!\n");
+                continue;
+            }
+            printf("Not a valid move. Enter a column number!\n");
             continue;
         }
             
