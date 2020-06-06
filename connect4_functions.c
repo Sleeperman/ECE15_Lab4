@@ -20,6 +20,7 @@ int print_welcome(void) {
 }
 
 void display_board(int board[][BOARD_SIZE_VERT]){
+    printf("\n");
     int col, row;
     for (row = 0; row < BOARD_SIZE_VERT; row++){
         for (col = 0; col < BOARD_SIZE_HORIZ; col++){
@@ -80,25 +81,26 @@ again:
 
 
 int player_move(int board[][BOARD_SIZE_VERT], int player_num){
-    //int valid = 1;
     int player_move;
-    while (1){
+    while (1) {
         printf("Please enter your move: ");
         scanf("%d", &player_move);
         while (getchar() != '\n');
-        
-        if (player_move > 0 && player_move <=BOARD_SIZE_HORIZ &&  is_column_full(board, player_move)){//column is full
-            if (is_column_full(board, player_move)){
-                printf("Not a valid move. This column is full. Try again!\n");
-                continue;
-            }
+        if (player_move > BOARD_SIZE_HORIZ || player_move < 0){
             printf("Not a valid move. Enter a column number!\n");
+            continue;
+              }
+
+        if (player_move <= BOARD_SIZE_HORIZ && player_move > 0 && is_column_full(board, player_move) == 0)// if valid move
+            break;
+
+        if (player_move > 0 && player_move <= BOARD_SIZE_HORIZ && is_column_full(board, player_move)){//if value is between 1 and 7
+     
+            printf("This column is full. Try again!\n");
+            player_move = 0;
             continue;
         }
             
-        if (player_move <= BOARD_SIZE_HORIZ && player_move > 0 && is_column_full(board, player_move == 0))// if valid move
-            break;
-        
         printf("Not a valid move. Enter a column number!\n");
     }
     
@@ -107,16 +109,34 @@ int player_move(int board[][BOARD_SIZE_VERT], int player_num){
 }
 
 int check_winner(int board[][BOARD_SIZE_VERT], int last_move){
-    if (last_move == 1){
-        return 1;
+    int row = BOARD_SIZE_VERT - 1; 
+    int empty = 0;
+    for (int i = 0; i < BOARD_SIZE_HORIZ; i++) {
+        for (int j = 0; j < BOARD_SIZE_VERT; j++) {
+            if (board[j][i] == 0) {
+                empty++;
+            }
+        }
     }
-    return 2;
+    while (1) {
+        if (board[last_move - 1][row] == 0 && board[last_move - 1][row - 1] != 0)
+            break;
+        else if (is_column_full(board, last_move) && empty != 0)
+            return board[last_move - 1][0];
+        else if (empty == 0)
+            return 0;
+       
+        row--;
+    }
+    return board[last_move - 1][row -1];
 }
 
 bool check_win_or_tie(int board[][BOARD_SIZE_VERT], int last_move){
     int non_empty_space = 0;
+    //printf("%d x %d", sizeof(board) / sizeof(board[0]), sizeof(board[0]));
     for (int i = 0; i < BOARD_SIZE_HORIZ; i++){
         for (int j = 0; j < BOARD_SIZE_VERT; j++){
+            
             if (board[j][i] != 0){
                 non_empty_space++;
             }
@@ -134,14 +154,16 @@ bool check_win_or_tie(int board[][BOARD_SIZE_VERT], int last_move){
                     return true;
                 }
             }
-            else if (board[j][i] != 0 && board[j][i] == board[j][i + 1] && board[j][i + 1] == board[j][i + 2] && board[j][i + 2] == board[j][i + 3]){//check vertical
+            else if (i != 5 && board[j][i] != 0 && board[j][i] == board[j][i + 1] && board[j][i + 1] == board[j][i + 2] && board[j][i + 2] == board[j][i + 3]){//check vertical
                 if (board[j][i] == 1){
+                    //printf("j:%d i:%d %d %d %d %d\n", j, i, board[j][i], board[j][i + 1], board[j][i + 2], board[j][i + 3]);
                     printf("*****************************\n");
                     printf("* Player X won!!! Game over *\n");
                     printf("*****************************\n");
                     return true;
                 }
                 if (board[j][i] == 2){
+                    //printf("j:%d i:%d %d %d %d %d\n", j, i,board[j][i], board[j][i + 1], board[j][i + 2], board[j][i + 3]);
                     printf("*****************************\n");
                     printf("* Player O won!!! Game over *\n");
                     printf("*****************************\n");
